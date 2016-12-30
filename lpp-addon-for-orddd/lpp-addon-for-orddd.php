@@ -146,10 +146,13 @@ class lpp_addon_for_orddd {
         $pickup_location_categories = array();
         $is_pickup_location = 'No';
         if( isset( $pickup_location_settings[ 'enabled' ] ) && 'yes' == $pickup_location_settings[ 'enabled' ] ) {
-            if( isset( $pickup_location_settings[ 'categories' ] ) ) {
+
+            if( isset( $pickup_location_settings[ 'categories' ] ) && $pickup_location_settings[ 'categories' ] != '' ) {
                 $pickup_location_categories = $pickup_location_settings[ 'categories' ];
+            } else {
+                $pickup_location_categories[] = 0;              
             }
-            
+
             foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
                 $terms = get_the_terms( $values[ 'data' ]->id  , 'product_cat' );
                 if( $terms != '' ) {
