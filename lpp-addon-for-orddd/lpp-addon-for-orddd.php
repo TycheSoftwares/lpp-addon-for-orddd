@@ -17,6 +17,7 @@ class lpp_addon_for_orddd {
         add_filter( 'orddd_shipping_settings_table_data', array( &$this, 'orddd_shipping_settings_table_data' ) );
         add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );
         add_filter( 'orddd_pickup_location_settings', array( &$this, 'orddd_pickup_location_settings' ), 10, 2 );
+        add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 2 );
 	}
 
 	public function orddd_after_custom_product_categories( $option_key ) {
@@ -224,6 +225,24 @@ class lpp_addon_for_orddd {
             }
         } 
         return $shipping_method_str;
+    }
+
+    public function orddd_get_shipping_method( $shipping_settings, $post ) {
+        $shipping_method_values = array();
+
+        if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
+            if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
+                $shipping_method_values[ 'shipping_methods' ] = $shipping_settings[ 'orddd_pickup_locations' ];
+            } else {
+                $shipping_method_values[ 'shipping_methods' ] = array();
+            }
+            if( isset( $_POST[ 'pickup_location' ][ 0 ] ) && $_POST[ 'pickup_location' ][ 0 ] != '' ) {
+                $shipping_method_values[ 'shipping_method' ] = "orddd_pickup_location_" . $_POST[ 'pickup_location' ][ 0 ];
+            } else {
+                $shipping_method_values[ 'shipping_method' ] = '';
+            }
+        }
+        return $shipping_method_values;
     }
 }
 $lpp_addon_for_orddd = new lpp_addon_for_orddd();
