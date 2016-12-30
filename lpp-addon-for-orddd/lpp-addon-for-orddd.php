@@ -120,21 +120,22 @@ class lpp_addon_for_orddd {
     public function orddd_shipping_settings_table_data( $shipping_settings ) {
         $shipping_method_str = '';
         foreach( $shipping_settings as $key => $value ) {
-            $shipping_settings_arr = get_option( 'orddd_shipping_based_settings_' . $value->row_id );
-            if ( isset( $shipping_settings_arr[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings_arr[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
-                $pickup_locations_stored = $shipping_settings_arr[ 'orddd_pickup_locations' ];
-                $shipping_method_str = "<b>Pickup Locations</b></br>";
-                $pickup_locations = get_option( 'woocommerce_pickup_locations', true );
-                foreach ( $pickup_locations as $pkey => $pvalue ) {
-
-                    if( in_array( 'orddd_pickup_location_' . esc_attr( $pkey ), $pickup_locations_stored ) ) {
-                        $address = lpp_addon_for_orddd::orddd_get_formatted_address( $pvalue, true );
-                        $shipping_method_str .= $address . ', ';
+            if( isset( $value->row_id ) ) { 
+                $shipping_settings_arr = get_option( 'orddd_shipping_based_settings_' . $value->row_id );
+                if ( isset( $shipping_settings_arr[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings_arr[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
+                    $pickup_locations_stored = $shipping_settings_arr[ 'orddd_pickup_locations' ];
+                    $shipping_method_str = "<b>Pickup Locations</b></br>";
+                    $pickup_locations = get_option( 'woocommerce_pickup_locations', true );
+                    foreach ( $pickup_locations as $pkey => $pvalue ) {
+                        if( in_array( 'orddd_pickup_location_' . esc_attr( $pkey ), $pickup_locations_stored ) ) {
+                            $address = lpp_addon_for_orddd::orddd_get_formatted_address( $pvalue, true );
+                            $shipping_method_str .= $address . ', ';
+                        }
                     }
+                    $shipping_method_str = substr( $shipping_method_str, 0, -2 );
+                    $shipping_settings[ $value->row_id ]->shipping_methods = $shipping_method_str;    
                 }
-                $shipping_method_str = substr( $shipping_method_str, 0, -2 );
-                $shipping_settings[ $value->row_id ]->shipping_methods = $shipping_method_str;    
-            }
+            }        
         }
         return $shipping_settings;
     }
