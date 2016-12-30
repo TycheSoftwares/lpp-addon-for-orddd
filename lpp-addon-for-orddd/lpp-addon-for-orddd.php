@@ -91,8 +91,8 @@ class lpp_addon_for_orddd {
 	}
 
     public function orddd_save_custom_settings( $input, $row_id ) {
+        $new_input = $input;
         if( isset ( $input[ 'orddd_pickup_locations' ] ) && count( $input[ 'orddd_pickup_locations' ] ) > 0 ) {
-            $new_input = $input;
             if( '' != $row_id ) {
                 $option_key = orddd_common::get_shipping_setting_option_key( $row_id );
                 $shipping_settings = get_option( 'orddd_shipping_based_settings_' . $row_id );
@@ -104,12 +104,12 @@ class lpp_addon_for_orddd {
                 }
             }
             $_REQUEST[ '_wp_http_referer' ] = get_admin_url() . 'admin.php?page=order_delivery_date&action=shipping_based&settings-updated=true';
-        } else {
+        } else if( !isset ( $input[ 'shipping_methods' ] ) && !isset( $input[ 'product_categories' ] ) ) {
             $option_key = orddd_common::get_shipping_setting_option_key( $row_id );
             unregister_setting( 'orddd_shipping_based_settings', 'orddd_shipping_based_settings_' . $option_key );
             
             if( get_option( 'orddd_enable_shipping_based_delivery' ) == 'on' ) {
-                if( isset( $input[ 'delivery_settings_based_on' ] ) && $input[ 'delivery_settings_based_on' ][ 0 ] == 'pickup_locations' ) {
+                if( isset( $input[ 'delivery_settings_based_on' ] ) && $input[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
                     add_settings_error( 'orddd_shipping_based_settings_' . $option_key, 'shipping_methods_error', 'Please select pickup locations', 'error' );
                 }
             }
