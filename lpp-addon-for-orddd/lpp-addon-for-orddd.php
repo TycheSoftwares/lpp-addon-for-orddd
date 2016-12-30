@@ -207,6 +207,7 @@ class lpp_addon_for_orddd {
         $is_pickup_location = $this->orddd_get_is_pickup_location();
         if( 'Yes' == $is_pickup_location ) {
             echo '<input type="hidden" id="is_pickup_location_enabled" name="is_pickup_location_enabled" value="yes">';
+            echo '<input type="hidden" name="orddd_pickup_location_selected" id="orddd_pickup_location_selected">';
         }
     }
 
@@ -228,18 +229,26 @@ class lpp_addon_for_orddd {
     }
 
     public function orddd_get_shipping_method( $shipping_settings, $post ) {
-        $shipping_method_values = array();
-
+        $shipping_method_values = array( 'shipping_methods' => array(), 'shipping_method' => '' );
         if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
+            
             if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
                 $shipping_method_values[ 'shipping_methods' ] = $shipping_settings[ 'orddd_pickup_locations' ];
             } else {
                 $shipping_method_values[ 'shipping_methods' ] = array();
             }
-            if( isset( $_POST[ 'pickup_location' ][ 0 ] ) && $_POST[ 'pickup_location' ][ 0 ] != '' ) {
-                $shipping_method_values[ 'shipping_method' ] = "orddd_pickup_location_" . $_POST[ 'pickup_location' ][ 0 ];
+
+            if ( isset( $_POST[ 'post_data' ] ) ) {
+                $shipping_class_to_load_type = preg_match( '/orddd_pickup_location_selected=(.*?)&/', $_POST['post_data'], $shipping_class_to_load_match );
+                if ( isset( $shipping_class_to_load_match[ 1 ] ) ) {
+                    $shipping_method_values[ 'shipping_method' ]= $shipping_class_to_load_match[ 1 ];
+                } 
             } else {
-                $shipping_method_values[ 'shipping_method' ] = '';
+                if( isset( $post[ 'pickup_location' ][ 0 ] ) && $post[ 'pickup_location' ][ 0 ] != '' ) {
+                    $shipping_method_values[ 'shipping_method' ] = "orddd_pickup_location_" . $post[ 'pickup_location' ][ 0 ];
+                } else if( isset( $post[ 'pickup_location' ] ) && $post[ 'pickup_location' ] != '' ) {
+                    $shipping_method_values[ 'shipping_method' ] = '';
+                }
             }
         }
         return $shipping_method_values;
