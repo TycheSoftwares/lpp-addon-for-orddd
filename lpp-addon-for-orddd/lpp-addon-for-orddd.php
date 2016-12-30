@@ -12,7 +12,8 @@ Contributor: Tyche Softwares, http://www.tychesoftwares.com/
 class lpp_addon_for_orddd {
 	public function __construct() {
 		add_action( 'orddd_after_custom_product_categories', array( &$this, 'orddd_after_custom_product_categories' ), 10, 1 );
-        add_filter( 'orddd_save_custom_settings', array( &$this, 'orddd_save_custom_settings' ) );
+        add_filter( 'orddd_save_custom_settings', array( &$this, 'orddd_save_custom_settings' ), 10, 2 );
+        add_filter( 'orddd_option_key', array( &$this, 'orddd_option_key' ) );
         add_filter( 'orddd_shipping_settings_table_data', array( &$this, 'orddd_shipping_settings_table_data' ) );
         add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );
         add_filter( 'orddd_pickup_location_settings', array( &$this, 'orddd_pickup_location_settings' ), 10, 2 );
@@ -115,6 +116,34 @@ class lpp_addon_for_orddd {
             $new_input = false;
         }   
         return $new_input; 
+    }
+
+    public function orddd_option_key( $shipping_settings ) {
+        $row_id = '';
+        if ( ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'shipping_based' ) && ( isset( $_GET[ 'mode' ] ) && $_GET[ 'mode' ] == 'edit' ) ) {
+            if( isset( $_GET[ 'row_id' ] ) ) {
+                $row_id = get_option( 'orddd_shipping_based_settings_option_key' );
+            }
+        } else {
+            if( isset( $_POST[ 'edit_row_id' ] ) ) {
+                $row_id = get_option( 'orddd_shipping_based_settings_option_key' );
+            }
+        }
+
+        $option_key = orddd_common::get_shipping_setting_option_key( $row_id );
+
+        if( isset( $_POST[ 'orddd_shipping_based_settings_' . $option_key ] ) ) {
+            $shipping_settings = $_POST[ 'orddd_shipping_based_settings_' . $option_key ];
+        } else {
+            $shipping_settings = array();
+        }
+           
+        if( ( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) && count( $shipping_settings[ 'orddd_pickup_locations' ] ) > 0 ) ) {
+        } else {
+            $option_key = get_option( 'orddd_shipping_based_settings_option_key' ); 
+        }
+
+        return $option_key;
     }
 
     public function orddd_shipping_settings_table_data( $shipping_settings ) {
