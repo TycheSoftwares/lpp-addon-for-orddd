@@ -194,6 +194,39 @@ class lpp_addon_for_orddd {
         if( 'Yes' == $is_pickup_location ) {
             echo '<input type="hidden" id="is_pickup_location_enabled" name="is_pickup_location_enabled" value="yes">';
             echo '<input type="hidden" name="orddd_pickup_location_selected" id="orddd_pickup_location_selected">';
+            $hidden_vars_str           = '';
+            if( get_option( 'orddd_enable_shipping_based_delivery' ) == 'on' ) {
+                $i                         = 0;
+                $orddd_pickup_locations    = array(); 
+                $shipping_settings         = array();
+                $results                   = orddd_common::orddd_get_shipping_settings();
+                $current_time              = current_time( 'timestamp' );
+                foreach ( $results as $key => $value ) {    
+                    $shipping_settings          = get_option( $value->option_name );
+                    $orddd_pickup_locations_str = lpp_addon_for_orddd::orddd_pickup_location_settings( $shipping_settings );
+                    $enable_delivery_date       = orddd_common::orddd_get_shipping_enable_delivery_date( $shipping_settings );
+                    $date_field_mandatory       = orddd_common::orddd_get_shipping_date_field_mandatory( $shipping_settings );
+                    $time_slots_enable          = orddd_common::orddd_is_shipping_timeslot_enable( $shipping_settings );
+                    $timeslot_field_mandatory   = orddd_common::orddd_get_shipping_time_field_mandatory( $shipping_settings );
+                    $new_array                  = orddd_common::orddd_get_shipping_hidden_variables( $shipping_settings );
+                    $var_time                   = orddd_common::orddd_get_shipping_time_settings_variable( $shipping_settings ); 
+                    $disabled_days_str          = orddd_common::orddd_get_shipping_disabled_days_str( $shipping_settings );
+
+                    $orddd_pickup_locations[ $i ][ 'orddd_pickup_locations' ] = $orddd_pickup_locations_str;
+                    $orddd_pickup_locations[ $i ][ 'enable_delivery_date' ] = $enable_delivery_date;
+                    $orddd_pickup_locations[ $i ][ 'date_field_mandatory' ] = $date_field_mandatory;
+                    $orddd_pickup_locations[ $i ][ 'time_slots' ] = $time_slots_enable;
+                    $orddd_pickup_locations[ $i ][ 'timeslot_field_mandatory' ] = $timeslot_field_mandatory;
+                    $orddd_pickup_locations[ $i ][ 'hidden_vars' ] = json_encode( $new_array );
+                    $orddd_pickup_locations[ $i ][ 'time_settings' ] = $var_time;
+                    $orddd_pickup_locations[ $i ][ 'disabled_days' ] = $disabled_days_str;
+                }
+
+                if( count( $orddd_pickup_locations ) > 0 ) {
+                    $hidden_vars_str = esc_attr( json_encode( $orddd_pickup_locations ) );
+                }
+                echo '<input type="hidden" name="orddd_hidden_location_str" id="orddd_hidden_location_str" value="' . $hidden_vars_str . '">';
+            }
         }
     }
 
