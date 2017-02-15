@@ -17,7 +17,7 @@ class lpp_addon_for_orddd {
         add_filter( 'orddd_shipping_settings_table_data', array( &$this, 'orddd_shipping_settings_table_data' ) );
         add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );
         add_filter( 'orddd_pickup_location_settings', array( &$this, 'orddd_pickup_location_settings' ), 10, 2 );
-        add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 2 );
+        add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 4 );
 	}
 
 	public function orddd_after_custom_product_categories( $option_key ) {
@@ -247,8 +247,8 @@ class lpp_addon_for_orddd {
         return $shipping_method_str;
     }
 
-    public function orddd_get_shipping_method( $shipping_settings, $post ) {
-        $shipping_method_values = array( 'shipping_methods' => array(), 'shipping_method' => '' );
+    public function orddd_get_shipping_method( $shipping_settings, $post, $shipping_methods = array(), $shipping_method  = '' ) {
+        $shipping_method_values = array( 'shipping_methods' => $shipping_methods, 'shipping_method' => $shipping_method );
         if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
             
             if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
@@ -256,11 +256,10 @@ class lpp_addon_for_orddd {
             } else {
                 $shipping_method_values[ 'shipping_methods' ] = array();
             }
-
-            if ( isset( $_POST[ 'post_data' ] ) ) {
-                $shipping_class_to_load_type = preg_match( '/orddd_pickup_location_selected=(.*?)&/', $_POST['post_data'], $shipping_class_to_load_match );
+            if ( isset( $post[ 'post_data' ] ) ) {
+                $shipping_class_to_load_type = preg_match( '/orddd_pickup_location_selected=(.*?)&/', $post['post_data'], $shipping_class_to_load_match );
                 if ( isset( $shipping_class_to_load_match[ 1 ] ) ) {
-                    $shipping_method_values[ 'shipping_method' ]= $shipping_class_to_load_match[ 1 ];
+                    $shipping_method_values[ 'shipping_method' ] = $shipping_class_to_load_match[ 1 ];
                 } 
             } else {
                 if( isset( $post[ 'pickup_location' ][ 0 ] ) && $post[ 'pickup_location' ][ 0 ] != '' ) {
