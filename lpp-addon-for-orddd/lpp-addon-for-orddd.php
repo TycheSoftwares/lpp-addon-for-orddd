@@ -180,6 +180,9 @@ class lpp_addon_for_orddd {
                             break 2;
                         }
                     }
+                } else if( in_array( 0, $pickup_location_categories ) ) {
+                    $is_pickup_location = 'Yes';
+                    break;
                 } else {
                     $is_pickup_location = 'No';
                     break;
