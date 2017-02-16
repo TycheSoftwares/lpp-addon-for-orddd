@@ -221,6 +221,7 @@ class lpp_addon_for_orddd {
                         $orddd_pickup_locations[ $i ][ 'time_settings' ] = $var_time;
                         $orddd_pickup_locations[ $i ][ 'disabled_days' ] = $disabled_days_str;
                     }
+                    $i++;
                 }
 
                 if( count( $orddd_pickup_locations ) > 0 ) {
