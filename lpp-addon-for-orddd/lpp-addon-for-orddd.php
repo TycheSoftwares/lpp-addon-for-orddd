@@ -211,15 +211,16 @@ class lpp_addon_for_orddd {
                     $new_array                  = orddd_common::orddd_get_shipping_hidden_variables( $shipping_settings );
                     $var_time                   = orddd_common::orddd_get_shipping_time_settings_variable( $shipping_settings ); 
                     $disabled_days_str          = orddd_common::orddd_get_shipping_disabled_days_str( $shipping_settings );
-
-                    $orddd_pickup_locations[ $i ][ 'orddd_pickup_locations' ] = $orddd_pickup_locations_str;
-                    $orddd_pickup_locations[ $i ][ 'enable_delivery_date' ] = $enable_delivery_date;
-                    $orddd_pickup_locations[ $i ][ 'date_field_mandatory' ] = $date_field_mandatory;
-                    $orddd_pickup_locations[ $i ][ 'time_slots' ] = $time_slots_enable;
-                    $orddd_pickup_locations[ $i ][ 'timeslot_field_mandatory' ] = $timeslot_field_mandatory;
-                    $orddd_pickup_locations[ $i ][ 'hidden_vars' ] = json_encode( $new_array );
-                    $orddd_pickup_locations[ $i ][ 'time_settings' ] = $var_time;
-                    $orddd_pickup_locations[ $i ][ 'disabled_days' ] = $disabled_days_str;
+                    if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
+                        $orddd_pickup_locations[ $i ][ 'orddd_pickup_locations' ] = $orddd_pickup_locations_str;
+                        $orddd_pickup_locations[ $i ][ 'enable_delivery_date' ] = $enable_delivery_date;
+                        $orddd_pickup_locations[ $i ][ 'date_field_mandatory' ] = $date_field_mandatory;
+                        $orddd_pickup_locations[ $i ][ 'time_slots' ] = $time_slots_enable;
+                        $orddd_pickup_locations[ $i ][ 'timeslot_field_mandatory' ] = $timeslot_field_mandatory;
+                        $orddd_pickup_locations[ $i ][ 'hidden_vars' ] = json_encode( $new_array );
+                        $orddd_pickup_locations[ $i ][ 'time_settings' ] = $var_time;
+                        $orddd_pickup_locations[ $i ][ 'disabled_days' ] = $disabled_days_str;
+                    }
                 }
 
                 if( count( $orddd_pickup_locations ) > 0 ) {
