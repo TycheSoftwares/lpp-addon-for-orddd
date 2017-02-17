@@ -15,8 +15,7 @@ class lpp_addon_for_orddd {
         add_filter( 'orddd_save_custom_settings', array( &$this, 'orddd_save_custom_settings' ), 10, 2 );
         add_filter( 'is_pickup_location_selected', array( &$this, 'is_pickup_location_selected' ), 10, 2 );
         add_filter( 'orddd_shipping_settings_table_data', array( &$this, 'orddd_shipping_settings_table_data' ) );
-        add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );
-        add_filter( 'orddd_pickup_location_settings', array( &$this, 'orddd_pickup_location_settings' ), 10, 2 );
+        add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );       
         add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 4 );
 	}
 
@@ -156,7 +155,7 @@ class lpp_addon_for_orddd {
         return $shipping_settings;
     }
 
-    public function orddd_get_is_pickup_location() {
+    public function orddd_get_is_pickup_location( $checkout = '' ) {
         global $post, $woocommerce;
         $pickup_location_settings = get_option( 'woocommerce_local_pickup_plus_settings', true );
         $pickup_location_categories = array();
@@ -168,32 +167,60 @@ class lpp_addon_for_orddd {
             } else {
                 $pickup_location_categories[] = 0;              
             }
-
-            foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
-                $terms = get_the_terms( $values[ 'data' ]->id  , 'product_cat' );
-                if( $terms != '' ) {
-                    foreach ( $terms as $term => $val ) {
-                        if( in_array( $val->term_id, $pickup_location_categories ) || in_array( 0, $pickup_location_categories ) ) {
+            if( is_account_page() ) {
+                if( is_object( $checkout ) ) {
+                    $order = new WC_Order( $checkout->id );
+                    $items = $order->get_items();
+                    //$items = $checkout->get_items();
+                    foreach( $items as $key => $value ) {
+                        $product_id = $value[ 'product_id' ];
+                        $terms = get_the_terms( $product_id  , 'product_cat' );
+                        if( $terms != '' ) {
+                            foreach ( $terms as $term => $val ) {
+                                if( in_array( $val->term_id, $pickup_location_categories ) || in_array( 0, $pickup_location_categories ) ) {
+                                    $is_pickup_location = 'Yes';
+                                } else {
+                                    $is_pickup_location = 'No';
+                                    break 2;
+                                }
+                            }
+                        } else if( in_array( 0, $pickup_location_categories ) ) {
                             $is_pickup_location = 'Yes';
+                            break;
                         } else {
                             $is_pickup_location = 'No';
-                            break 2;
+                            break;
                         }
-                    }
-                } else if( in_array( 0, $pickup_location_categories ) ) {
-                    $is_pickup_location = 'Yes';
-                    break;
-                } else {
-                    $is_pickup_location = 'No';
-                    break;
+                    }    
                 }
+            } else {
+                foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
+                    $terms = get_the_terms( $values[ 'data' ]->id  , 'product_cat' );
+                    if( $terms != '' ) {
+                        foreach ( $terms as $term => $val ) {
+                            if( in_array( $val->term_id, $pickup_location_categories ) || in_array( 0, $pickup_location_categories ) ) {
+                                $is_pickup_location = 'Yes';
+                            } else {
+                                $is_pickup_location = 'No';
+                                break 2;
+                            }
+                        }
+                    } else if( in_array( 0, $pickup_location_categories ) ) {
+                        $is_pickup_location = 'Yes';
+                        break;
+                    } else {
+                        $is_pickup_location = 'No';
+                        break;
+                    }
+                }    
             }
+            
         }
         return $is_pickup_location;
     }
 
-    public function orddd_before_checkout_delivery_date() {
-        $is_pickup_location = $this->orddd_get_is_pickup_location();
+    public function orddd_before_checkout_delivery_date( $checkout ) {
+        $is_pickup_location = $this->orddd_get_is_pickup_location( $checkout );
         if( 'Yes' == $is_pickup_location ) {
             echo '<input type="hidden" id="is_pickup_location_enabled" name="is_pickup_location_enabled" value="yes">';
             echo '<input type="hidden" name="orddd_pickup_location_selected" id="orddd_pickup_location_selected">';
@@ -206,7 +233,7 @@ class lpp_addon_for_orddd {
                 $current_time              = current_time( 'timestamp' );
                 foreach ( $results as $key => $value ) {    
                     $shipping_settings          = get_option( $value->option_name );
-                    $orddd_pickup_locations_str = lpp_addon_for_orddd::orddd_pickup_location_settings( $shipping_settings );
+                    $orddd_pickup_locations_str = lpp_addon_for_orddd::orddd_pickup_location_settings( $shipping_settings, $checkout );
                     $enable_delivery_date       = orddd_common::orddd_get_shipping_enable_delivery_date( $shipping_settings );
                     $date_field_mandatory       = orddd_common::orddd_get_shipping_date_field_mandatory( $shipping_settings );
                     $time_slots_enable          = orddd_common::orddd_is_shipping_timeslot_enable( $shipping_settings );
@@ -235,9 +262,9 @@ class lpp_addon_for_orddd {
         }
     }
 
-    public function orddd_pickup_location_settings( $shipping_settings ) {
+    public function orddd_pickup_location_settings( $shipping_settings, $checkout = '' ) {
         $shipping_method_str    = '';
-        $is_pickup_location = $this->orddd_get_is_pickup_location();
+        $is_pickup_location = $this->orddd_get_is_pickup_location( $checkout );
         if( 'Yes' == $is_pickup_location ) {
             if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
                 if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
