@@ -24,7 +24,7 @@ define( 'LPP_SL_STORE_URL', 'http://www.tychesoftwares.com/' );
 
 // the name of your product. This is the title of your product in EDD and should match the download title in EDD exactly
 // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
-define( 'LPP_SL_ITEM_NAME', 'Local Pickup Plus Compatibility Addon' ); 
+define( 'LPP_SL_ITEM_NAME', 'Local Pickup Plus Compatibility Addon for Order Delivery Date for WooCommerce Plugin' ); 
 // setup the updater
 $edd_updater = new EDD_SL_Plugin_Updater( LPP_SL_STORE_URL, __FILE__, array(
     'version'   => '6.3',       // current version number
