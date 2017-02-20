@@ -85,10 +85,14 @@ class lpp_addon_for_orddd {
                     <?php
                     foreach ( $pickup_locations as $key => $value ) {
                         $address = lpp_addon_for_orddd::orddd_get_formatted_address( $value, true );
-                        if( in_array( 'orddd_pickup_location_' . esc_attr( $key ) , $pickup_locations_stored ) ) {
-                            echo '<option value="orddd_pickup_location_' . esc_attr( $key ) . '" selected>';
+                        $location_id = '';
+                        if( isset( $value[ 'id' ] ) ) {
+                            $location_id = $value[ 'id' ];
+                        }
+                        if( in_array( 'orddd_pickup_location_' . esc_attr( $location_id ) , $pickup_locations_stored ) ) {
+                            echo '<option value="orddd_pickup_location_' . esc_attr( $location_id ) . '" selected>';
                         } else {
-                            echo '<option value="orddd_pickup_location_' . esc_attr( $key ) . '">';
+                            echo '<option value="orddd_pickup_location_' . esc_attr( $location_id ) . '">';
                         }
                         echo $address;
                         echo '</option>';
@@ -177,7 +181,11 @@ class lpp_addon_for_orddd {
                     $shipping_method_str = "<b>Pickup Locations</b></br>";
                     $pickup_locations = get_option( 'woocommerce_pickup_locations', true );
                     foreach ( $pickup_locations as $pkey => $pvalue ) {
-                        if( in_array( 'orddd_pickup_location_' . esc_attr( $pkey ), $pickup_locations_stored ) ) {
+                        $location_id = '';
+                        if( isset( $pvalue[ 'id' ] ) ) {
+                            $location_id = $pvalue[ 'id' ];
+                        }
+                        if( in_array( 'orddd_pickup_location_' . esc_attr( $location_id ), $pickup_locations_stored ) ) {
                             $address = lpp_addon_for_orddd::orddd_get_formatted_address( $pvalue, true );
                             $shipping_method_str .= $address . ', ';
                         }
