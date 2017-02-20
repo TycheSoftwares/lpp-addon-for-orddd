@@ -9,8 +9,39 @@ Author URI: http://www.tychesoftwares.com/about
 Contributor: Tyche Softwares, http://www.tychesoftwares.com/
 */
 
+if ( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
+    // load our custom updater if it doesn't already exist
+    include( dirname( __FILE__ ) . '/plugin-updates/EDD_SL_Plugin_Updater.php' );
+}
+
+include_once( 'license.php' );
+
+// retrieve our license key from the DB
+$license_key = trim( get_option( 'lpp_sample_license_key' ) );
+// this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
+// IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
+define( 'LPP_SL_STORE_URL', 'http://www.tychesoftwares.com/' ); 
+
+// the name of your product. This is the title of your product in EDD and should match the download title in EDD exactly
+// IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
+define( 'LPP_SL_ITEM_NAME', 'Local Pickup Plus Compatibility Addon' ); 
+// setup the updater
+$edd_updater = new EDD_SL_Plugin_Updater( LPP_SL_STORE_URL, __FILE__, array(
+    'version'   => '6.3',       // current version number
+    'license'   => $license_key,    // license key (used get_option above to retrieve from DB)
+    'item_name' => LPP_SL_ITEM_NAME,  // name of this plugin
+    'author'    => 'Ashok Rane'  // author of this plugin
+)
+);
+
 class lpp_addon_for_orddd {
 	public function __construct() {
+        //License
+        add_action( 'orddd_add_submenu', array( &$this, 'lpp_addon_for_orddd_menu' ) );
+        add_action( 'admin_init', array( 'lpp_license', 'lpp_register_option' ) );
+        add_action( 'admin_init', array( 'lpp_license', 'lpp_deactivate_license' ) );
+        add_action( 'admin_init', array( 'lpp_license', 'lpp_activate_license' ) );
+
 		add_action( 'orddd_after_custom_product_categories', array( &$this, 'orddd_after_custom_product_categories' ), 10, 1 );
         add_filter( 'orddd_save_custom_settings', array( &$this, 'orddd_save_custom_settings' ), 10, 2 );
         add_filter( 'is_pickup_location_selected', array( &$this, 'is_pickup_location_selected' ), 10, 2 );
@@ -18,6 +49,10 @@ class lpp_addon_for_orddd {
         add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );       
         add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 4 );
 	}
+
+    public function lpp_addon_for_orddd_menu() {
+        $page = add_submenu_page( 'order_delivery_date', __( 'Activate Local Pickup Plus Compatibility Addon License', 'order-delivery-date' ), __( 'Activate Local Pickup Plus Compatibility Addon License', 'order-delivery-date' ), 'manage_woocommerce', 'lpp_license_page', array( 'lpp_license', 'lpp_sample_license_page' ) );
+    }
 
 	public function orddd_after_custom_product_categories( $option_key ) {
 		$pickup_location_settings = get_option( 'woocommerce_local_pickup_plus_settings', true );
