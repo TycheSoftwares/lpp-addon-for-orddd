@@ -9,6 +9,9 @@ Author URI: http://www.tychesoftwares.com/about
 Contributor: Tyche Softwares, http://www.tychesoftwares.com/
 */
 
+global $lpp_version;
+$lpp_version = '1.0';
+
 if ( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
     // load our custom updater if it doesn't already exist
     include( dirname( __FILE__ ) . '/plugin-updates/EDD_SL_Plugin_Updater.php' );
@@ -47,6 +50,7 @@ class lpp_addon_for_orddd {
         add_filter( 'is_pickup_location_selected', array( &$this, 'is_pickup_location_selected' ), 10, 2 );
         add_filter( 'orddd_shipping_settings_table_data', array( &$this, 'orddd_shipping_settings_table_data' ) );
         add_action( 'orddd_before_checkout_delivery_date', array( &$this, 'orddd_before_checkout_delivery_date' ) );       
+        add_action( 'orddd_include_front_scripts', array( &$this, 'orddd_include_front_scripts' ) ); 
         add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 4 );
 	}
 
@@ -262,11 +266,20 @@ class lpp_addon_for_orddd {
         return $is_pickup_location;
     }
 
+    public function orddd_include_front_scripts() {
+        global $lpp_version;
+        $is_pickup_location = $this->orddd_get_is_pickup_location();
+        if( 'Yes' == $is_pickup_location ) {
+            wp_enqueue_script( 'lpp-addon-for-orddd', plugins_url( '/js/lpp-addon-for-orddd.js', __FILE__ ), '',  $lpp_version, false );
+        }
+    }
+
     public function orddd_before_checkout_delivery_date( $checkout ) {
         $is_pickup_location = $this->orddd_get_is_pickup_location( $checkout );
         if( 'Yes' == $is_pickup_location ) {
             echo '<input type="hidden" id="is_pickup_location_enabled" name="is_pickup_location_enabled" value="yes">';
             echo '<input type="hidden" name="orddd_pickup_location_selected" id="orddd_pickup_location_selected">';
+            echo '<input type="hidden" name="lpp_selected_pickup_location" id="lpp_selected_pickup_location">';
             $hidden_vars_str           = '';
             if( get_option( 'orddd_enable_shipping_based_delivery' ) == 'on' ) {
                 $i                         = 0;
