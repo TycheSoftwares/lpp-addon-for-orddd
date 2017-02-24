@@ -29,43 +29,45 @@ jQuery( document ).ready(function() {
         jQuery(document).ajaxComplete( function( event, xhr, options ) {
 	        if( options.url.indexOf( "wc-ajax=update_order_review" ) !== -1 ) {
 	            if( xhr.statusText != "abort" ) {
-	                jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", true );
-	                jQuery( "#time_slot" ).attr( "disabled", "disabled" );
+                    if( jQuery( "#orddd_enable_shipping_based_delivery" ).val() == "on" ) {
+    	                jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", true );
+    	                jQuery( "#time_slot" ).attr( "disabled", "disabled" );
 
-	                var shipping_method = jQuery( "input[name=\"shipping_method[0]\"]:checked" ).val();
-			        if( typeof shipping_method === "undefined" ) {
-			            var shipping_method = jQuery( "select[name=\"shipping_method[0]\"] option:selected" ).val();
-			        }
-			        if( typeof shipping_method === "undefined" ) {
-			            var shipping_method = jQuery( "input[name=\"shipping_method[0]\"]" ).val();                    
-			        }
+    	                var shipping_method = jQuery( "input[name=\"shipping_method[0]\"]:checked" ).val();
+    			        if( typeof shipping_method === "undefined" ) {
+    			            var shipping_method = jQuery( "select[name=\"shipping_method[0]\"] option:selected" ).val();
+    			        }
+    			        if( typeof shipping_method === "undefined" ) {
+    			            var shipping_method = jQuery( "input[name=\"shipping_method[0]\"]" ).val();                    
+    			        }
 
-        			if( shipping_method == "local_pickup_plus" ) {
-        				if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() != "undefined" ) {
-                    		var pickup_location = jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
-                		} else if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() === "undefined" ) {
-                    		if( typeof jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val() != "undefined" ) {
-                        		var pickup_location = jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
-                    		} else if( typeof jQuery( "input[name=\"pickup_location[0]\"]" ).val() != "undefined" ) {
-                    			var pickup_location = jQuery( "input[name=\"pickup_location[0]\"]" ).val();
-                			}
-                		} 
+            			if( shipping_method == "local_pickup_plus" ) {
+            				if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() != "undefined" ) {
+                        		var pickup_location = jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
+                    		} else if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() === "undefined" ) {
+                        		if( typeof jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val() != "undefined" ) {
+                            		var pickup_location = jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
+                        		} else if( typeof jQuery( "input[name=\"pickup_location[0]\"]" ).val() != "undefined" ) {
+                        			var pickup_location = jQuery( "input[name=\"pickup_location[0]\"]" ).val();
+                    			}
+                    		} 
 
-		                if( typeof pickup_location === "undefined" ) {
-        		            var pickup_location = "";
-                		}
-                		if( jQuery( "#lpp_selected_pickup_location" ).val() != pickup_location ) {
-        					jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", false );    
-							jQuery( "#time_slot" ).removeAttr( "disabled", "disabled" );
-        					load_delivery_date();
-	    					if ( jQuery( "#orddd_enable_autofill_of_delivery_date" ).val() == "on" ) {
-                            	orddd_autofil_date_time();
-                        	}
-                        }
-                        jQuery( "#lpp_selected_pickup_location" ).val( pickup_location );
-        			} else {
-        				jQuery( "#lpp_selected_pickup_location" ).val( "" );
-        			}
+    		                if( typeof pickup_location === "undefined" ) {
+            		            var pickup_location = "";
+                    		}
+                    		if( jQuery( "#lpp_selected_pickup_location" ).val() != pickup_location ) {
+            					jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", false );    
+    							jQuery( "#time_slot" ).removeAttr( "disabled", "disabled" );
+            					load_delivery_date();
+    	    					if ( jQuery( "#orddd_enable_autofill_of_delivery_date" ).val() == "on" ) {
+                                	orddd_autofil_date_time();
+                            	}
+                            }
+                            jQuery( "#lpp_selected_pickup_location" ).val( pickup_location );
+            			} else {
+            				jQuery( "#lpp_selected_pickup_location" ).val( "" );
+            			}
+                    }
 	            }
 	        }
 	    });
