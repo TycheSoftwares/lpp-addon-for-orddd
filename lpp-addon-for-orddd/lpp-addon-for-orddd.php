@@ -335,25 +335,39 @@ class lpp_addon_for_orddd {
         return $shipping_method_str;
     }
 
-    public function orddd_get_shipping_method( $shipping_settings, $post, $shipping_methods = array(), $shipping_method  = '' ) {
-        $shipping_method_values = array( 'shipping_methods' => $shipping_methods, 'shipping_method' => $shipping_method );
-        if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
-            
-            if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
-                $shipping_method_values[ 'shipping_methods' ] = $shipping_settings[ 'orddd_pickup_locations' ];
-            } else {
-                $shipping_method_values[ 'shipping_methods' ] = array();
+    public function orddd_get_shipping_method( $shipping_settings, $post, $shipping_methods = array(), $shipping_method = '' ) {
+        $shipping_method_selected = '';
+        if( isset( $post[ 'shipping_method' ][ 0 ] ) && is_array( $post[ 'shipping_method' ] ) ) {
+            $shipping_method_selected = $post[ 'shipping_method' ][ 0 ];
+            if( false !== strpos( $shipping_method_selected, 'usps' ) ) {
+                $shipping_method_selected = $orddd_zone_id . ":" . $shipping_method_selected;
             }
-            if ( isset( $post[ 'post_data' ] ) ) {
-                $shipping_class_to_load_type = preg_match( '/orddd_pickup_location_selected=(.*?)&/', $post['post_data'], $shipping_class_to_load_match );
-                if ( isset( $shipping_class_to_load_match[ 1 ] ) ) {
-                    $shipping_method_values[ 'shipping_method' ] = $shipping_class_to_load_match[ 1 ];
+        } else if( isset( $post[ 'shipping_method' ] ) && $post[ 'shipping_method' ] != '' ) {
+            $shipping_method_selected = $post[ 'shipping_method' ];
+            if( false !== strpos( $shipping_method_selected, 'usps' ) ) {
+                $shipping_method_selected = $orddd_zone_id . ":" . $shipping_method_selected;
+            }
+        }
+
+        $shipping_method_values = array( 'shipping_methods' => $shipping_methods, 'shipping_method' => $shipping_method );
+
+        if( $shipping_method_selected == 'local_pickup_plus' ) {
+            if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
+
+                if( isset( $shipping_settings[ 'orddd_pickup_locations' ] ) ) {
+                    $shipping_method_values[ 'shipping_methods' ] = $shipping_settings[ 'orddd_pickup_locations' ];
                 } 
-            } else {
-                if( isset( $post[ 'pickup_location' ][ 0 ] ) && $post[ 'pickup_location' ][ 0 ] != '' ) {
-                    $shipping_method_values[ 'shipping_method' ] = "orddd_pickup_location_" . $post[ 'pickup_location' ][ 0 ];
-                } else if( isset( $post[ 'pickup_location' ] ) && $post[ 'pickup_location' ] != '' ) {
-                    $shipping_method_values[ 'shipping_method' ] = '';
+                if ( isset( $post[ 'post_data' ] ) ) {
+                    $shipping_class_to_load_type = preg_match( '/orddd_pickup_location_selected=(.*?)&/', $post['post_data'], $shipping_class_to_load_match );
+                    if ( isset( $shipping_class_to_load_match[ 1 ] ) ) {
+                        $shipping_method_values[ 'shipping_method' ] = $shipping_class_to_load_match[ 1 ];
+                    } 
+                } else {
+                    if( isset( $post[ 'pickup_location' ][ 0 ] ) && $post[ 'pickup_location' ][ 0 ] != '' && is_array( $post[ 'pickup_location' ] ) ) {
+                        $shipping_method_values[ 'shipping_method' ] = "orddd_pickup_location_" . $post[ 'pickup_location' ][ 0 ];
+                    } else if( isset( $post[ 'pickup_location' ] ) && $post[ 'pickup_location' ] != '' ) {
+                        $shipping_method_values[ 'shipping_method' ] = $post[ 'pickup_location' ];
+                    }
                 }
             }
         }
