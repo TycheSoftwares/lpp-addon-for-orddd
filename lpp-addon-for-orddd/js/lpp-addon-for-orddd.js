@@ -79,11 +79,12 @@ jQuery( document ).ready(function() {
 });	
 
 function orddd_lpp_method_func( shipping_method ) {
+    var location_selected = '';
 	if( 'undefined' != typeof( jQuery( "#is_pickup_location_enabled" ).val() ) ) {
         if ( "1" == jQuery( "#orddd_is_account_page" ).val() ) {
-            var shipping_method = jQuery( "#shipping_method" ).val();
+            location_selected = jQuery( "#shipping_method" ).val();
             var str = "orddd_pickup_location";            
-            if( shipping_method.indexOf( str ) !== -1 ) {
+            if( location_selected.indexOf( str ) !== -1 ) {
                 var pickup_location = jQuery( "#orddd_hidden_location_str" ).val();
                 jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
             } else {
@@ -94,35 +95,37 @@ function orddd_lpp_method_func( shipping_method ) {
             if( shipping_method == 'local_pickup_plus' ) {
                 if( jQuery( "#orddd_hidden_location_str" ).val() != '' ) {
                     if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() != "undefined" ) {
-                        var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
+                        var location_selected = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
                     } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() === "undefined" ) {
                         if( typeof jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val() != "undefined" ) {
-                            var shipping_method = "orddd_pickup_location_" + jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
+                            var location_selected = "orddd_pickup_location_" + jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
                         } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]" ).val() != "undefined" ) {
-                            var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]" ).val();
+                            var location_selected = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]" ).val();
                         }
                     } 
 
-                    if( typeof shipping_method === "undefined" ) {
-                        var shipping_method = "";
+                    if( typeof location_selected === "undefined" ) {
+                        var location_selected = "";
                     }
 
-                    if( typeof shipping_method != "undefined" && '' != shipping_method ) {
+                    if( typeof location_selected != "undefined" && '' != location_selected ) {
                         var pickup_location = jQuery( "#orddd_hidden_location_str" ).val();
                         jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
                     }
-                    jQuery( "#orddd_pickup_location_selected" ).val( shipping_method );    
+                    jQuery( "#orddd_pickup_location_selected" ).val( location_selected );    
                 }
             } else {
+                location_selected = shipping_method;
                 var pickup_location = jQuery( "#orddd_hidden_vars_custom_str" ).val();
                 jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
             }
         }        
     } else {
+        location_selected = shipping_method;
         var pickup_location = jQuery( "#orddd_hidden_vars_custom_str" ).val();
         jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
     }
-    return shipping_method;
+    return location_selected;
 }
 
 function lpp_shipping_methods( value, shipping_methods ) {
