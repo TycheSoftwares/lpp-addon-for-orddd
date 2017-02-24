@@ -55,6 +55,7 @@ jQuery( document ).ready(function() {
     		                if( typeof pickup_location === "undefined" ) {
             		            var pickup_location = "";
                     		}
+
                     		if( jQuery( "#lpp_selected_pickup_location" ).val() != pickup_location ) {
             					jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", false );    
     							jQuery( "#time_slot" ).removeAttr( "disabled", "disabled" );
@@ -62,6 +63,9 @@ jQuery( document ).ready(function() {
     	    					if ( jQuery( "#orddd_enable_autofill_of_delivery_date" ).val() == "on" ) {
                                 	orddd_autofil_date_time();
                             	}
+                            } else {
+                                jQuery( "#e_deliverydate" ).datepicker( "option", "disabled", false );    
+                                jQuery( "#time_slot" ).removeAttr( "disabled", "disabled" );
                             }
                             jQuery( "#lpp_selected_pickup_location" ).val( pickup_location );
             			} else {
@@ -88,25 +92,27 @@ function orddd_lpp_method_func( shipping_method ) {
             } 
         } else {
             if( shipping_method == 'local_pickup_plus' ) {
-                if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() != "undefined" ) {
-                    var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
-                } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() === "undefined" ) {
-                    if( typeof jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val() != "undefined" ) {
-                        var shipping_method = "orddd_pickup_location_" + jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
-                    } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]" ).val() != "undefined" ) {
-                    	var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]" ).val();
-                	}
-                } 
+                if( jQuery( "#orddd_hidden_location_str" ).val() != '' ) {
+                    if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() != "undefined" ) {
+                        var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val();    
+                    } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]:checked" ).val() === "undefined" ) {
+                        if( typeof jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val() != "undefined" ) {
+                            var shipping_method = "orddd_pickup_location_" + jQuery( "select[name=\"pickup_location[0]\"] option:selected" ).val();
+                        } else if( typeof jQuery( "input[name=\"pickup_location[0]\"]" ).val() != "undefined" ) {
+                            var shipping_method = "orddd_pickup_location_" + jQuery( "input[name=\"pickup_location[0]\"]" ).val();
+                        }
+                    } 
 
-                if( typeof shipping_method === "undefined" ) {
-                    var shipping_method = "";
-                }
+                    if( typeof shipping_method === "undefined" ) {
+                        var shipping_method = "";
+                    }
 
-                if( typeof shipping_method != "undefined" && '' != shipping_method ) {
-                    var pickup_location = jQuery( "#orddd_hidden_location_str" ).val();
-                    jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
+                    if( typeof shipping_method != "undefined" && '' != shipping_method ) {
+                        var pickup_location = jQuery( "#orddd_hidden_location_str" ).val();
+                        jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
+                    }
+                    jQuery( "#orddd_pickup_location_selected" ).val( shipping_method );    
                 }
-                jQuery( "#orddd_pickup_location_selected" ).val( shipping_method );
             } else {
                 var pickup_location = jQuery( "#orddd_hidden_vars_custom_str" ).val();
                 jQuery( "#orddd_hidden_vars_str" ).val( pickup_location );
