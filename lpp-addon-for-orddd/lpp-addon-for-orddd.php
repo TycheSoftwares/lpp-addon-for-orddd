@@ -72,7 +72,13 @@ class lpp_addon_for_orddd {
 
     public function lpp_error_notice() {
         $class = 'notice notice-error';
-        $message = __( '<b>Local Pickup Plus Compatibility Addon</b> requires <b>Order Delivery Date Pro for WooCommerce</b> and <b>WooCommerce Local Pickup Plus</b> plugin installed and activate.', 'order-delivery-date' );
+        if( !is_plugin_active( 'order-delivery-date/order_delivery_date.php' ) && !is_plugin_active( 'woocommerce-shipping-local-pickup-plus/woocommerce-shipping-local-pickup-plus.php' ) ) {
+            $message = __( '<b>Local Pickup Plus Compatibility Addon</b> requires <b>Order Delivery Date Pro for WooCommerce</b> and <b>WooCommerce Local Pickup Plus</b> plugin installed and activate.', 'order-delivery-date' );
+        } else if( !is_plugin_active( 'order-delivery-date/order_delivery_date.php' ) ) {
+            $message = __( '<b>Local Pickup Plus Compatibility Addon</b> requires <b>Order Delivery Date Pro for WooCommerce</b> plugin installed and activate.', 'order-delivery-date' );
+        } else if( !is_plugin_active( 'woocommerce-shipping-local-pickup-plus/woocommerce-shipping-local-pickup-plus.php' ) ) {
+            $message = __( '<b>Local Pickup Plus Compatibility Addon</b> requires <b>WooCommerce Local Pickup Plus</b> plugin installed and activate.', 'order-delivery-date' );
+        }
         printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
     }
 
