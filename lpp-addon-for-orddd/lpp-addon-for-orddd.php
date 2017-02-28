@@ -39,6 +39,10 @@ $edd_updater = new EDD_SL_Plugin_Updater( LPP_SL_STORE_URL, __FILE__, array(
 
 class lpp_addon_for_orddd {
 	public function __construct() {
+        // Error notice
+        //Check for Order Delivery Date Pro for WooCommerce and WooCommerce Local Pickup Plus plugin
+        add_action( 'admin_init', array( &$this, 'lpp_check_if_plugin_active' ) );
+
         //License
         add_action( 'orddd_add_submenu', array( &$this, 'lpp_addon_for_orddd_menu' ) );
         add_action( 'admin_init', array( 'lpp_license', 'lpp_register_option' ) );
@@ -53,6 +57,24 @@ class lpp_addon_for_orddd {
         add_action( 'orddd_include_front_scripts', array( &$this, 'orddd_include_front_scripts' ) ); 
         add_filter( 'orddd_get_shipping_method', array( &$this, 'orddd_get_shipping_method' ), 10, 4 );
 	}
+
+    public function lpp_check_if_plugin_active() {
+        if ( !is_plugin_active( 'order-delivery-date/order_delivery_date.php' ) || !is_plugin_active( 'woocommerce-shipping-local-pickup-plus/woocommerce-shipping-local-pickup-plus.php' ) ) {
+            if ( is_plugin_active( plugin_basename( __FILE__ ) ) ) {
+                deactivate_plugins( plugin_basename( __FILE__ ) );
+                add_action( 'admin_notices', array( &$this, 'lpp_error_notice' ) );
+                if ( isset( $_GET[ 'activate' ] ) ) {
+                    unset( $_GET[ 'activate' ] );
+                }
+            }
+        }
+    }
+
+    public function lpp_error_notice() {
+        $class = 'notice notice-error';
+        $message = __( '<b>Local Pickup Plus Compatibility Addon</b> requires <b>Order Delivery Date Pro for WooCommerce</b> and <b>WooCommerce Local Pickup Plus</b> plugin installed and activate.', 'order-delivery-date' );
+        printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
+    }
 
     public function lpp_addon_for_orddd_menu() {
         $page = add_submenu_page( 'order_delivery_date', __( 'Activate Local Pickup Plus Compatibility Addon License', 'order-delivery-date' ), __( 'Activate Local Pickup Plus Compatibility Addon License', 'order-delivery-date' ), 'manage_woocommerce', 'lpp_license_page', array( 'lpp_license', 'lpp_sample_license_page' ) );
