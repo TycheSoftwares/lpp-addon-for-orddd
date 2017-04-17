@@ -113,7 +113,7 @@ class lpp_addon_for_orddd {
                 </label>
             </p>
             <div class="delivery_type_options delivery_type_orddd_pickup_locations">          
-                <select class="orddd_pickup_locations" id="orddd_pickup_locations" name="orddd_shipping_based_settings_<?php echo $option_key; ?>[orddd_pickup_locations][]" multiple="multiple" placeholder="<?php _e( 'Choose Pickup Locations', 'order-delivery-date' );?>">
+                <select class="orddd_shipping_methods" id="orddd_pickup_locations" name="orddd_shipping_based_settings_<?php echo $option_key; ?>[orddd_pickup_locations][]" multiple="multiple" placeholder="<?php _e( 'Choose Pickup Locations', 'order-delivery-date' );?>">
                     <?php
                     foreach ( $pickup_locations as $key => $value ) {
                         $address = lpp_addon_for_orddd::orddd_get_formatted_address( $value, true );
