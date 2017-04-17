@@ -7,7 +7,7 @@
  * Allows plugins to use their own update API.
  *
  * @author Ashok Rane
- * @version 1.1
+ * @version 1.2
  */
 class EDD_SL_Plugin_Updater {
 	private $api_url  = 'http://www.tychesoftwares.com/';
