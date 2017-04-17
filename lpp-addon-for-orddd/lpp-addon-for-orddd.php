@@ -270,7 +270,12 @@ class lpp_addon_for_orddd {
                 }
             } else {
                 foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
-                    $terms = get_the_terms( $values[ 'data' ]->id  , 'product_cat' );
+                    if( version_compare( get_option( 'woocommerce_version' ), '3.0.0', ">=" ) ) {
+                        $product_id = $values[ 'data' ]->get_id();
+                    } else {
+                        $product_id = $values[ 'data' ]->id;
+                    }
+                    $terms = get_the_terms( $product_id , 'product_cat' );
                     if( $terms != '' ) {
                         foreach ( $terms as $term => $val ) {
                             if( in_array( $val->term_id, $pickup_location_categories ) || in_array( 0, $pickup_location_categories ) ) {
