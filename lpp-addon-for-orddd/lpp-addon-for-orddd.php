@@ -4,13 +4,13 @@ Plugin Name: Local Pickup Plus Compatibility Addon
 Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/order-delivery-date-for-woocommerce-pro-21/
 Description: This plugin allows customers to add different delivery settings for different pickup addresses from WooCommerce Local Pickup Plus plugin. This plugin is an addon for <a href="https://www.tychesoftwares.com/store/premium-plugins/order-delivery-date-for-woocommerce-pro-21/" target="_blank">Order Delivery Date Pro for WooCommerce</a> plugin.
 Author: Tyche Softwares
-Version: 1.2
+Version: 1.3
 Author URI: http://www.tychesoftwares.com/about
 Contributor: Tyche Softwares, http://www.tychesoftwares.com/
 */
 
 global $lpp_version;
-$lpp_version = '1.2';
+$lpp_version = '1.3';
 
 if ( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
     // load our custom updater if it doesn't already exist
@@ -30,7 +30,7 @@ define( 'LPP_SL_STORE_URL', 'http://www.tychesoftwares.com/' );
 define( 'LPP_SL_ITEM_NAME', 'Local Pickup Plus Compatibility Addon for Order Delivery Date for WooCommerce Plugin' ); 
 // setup the updater
 $edd_updater = new EDD_SL_Plugin_Updater( LPP_SL_STORE_URL, __FILE__, array(
-    'version'   => '1.2',       // current version number
+    'version'   => '1.3',       // current version number
     'license'   => $license_key,    // license key (used get_option above to retrieve from DB)
     'item_name' => LPP_SL_ITEM_NAME,  // name of this plugin
     'author'    => 'Ashok Rane'  // author of this plugin
