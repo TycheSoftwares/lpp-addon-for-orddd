@@ -7,13 +7,13 @@
  * Allows plugins to use their own update API.
  *
  * @author Ashok Rane
- * @version 1.2
+ * @version 1.3
  */
 class EDD_SL_Plugin_Updater {
 	private $api_url  = 'http://www.tychesoftwares.com/';
 	private $api_data = array();
-	private $name     = 'Order Delivery Date Pro for Woocommerce';
-	private $slug     = 'order-delivery-date';
+	private $name     = 'Local Pickup Plus Compatibility Addon for Order Delivery Date for WooCommerce Plugin';
+	private $slug     = 'lpp-addon-for-orddd';
 
 	/**
 	 * Class constructor.
