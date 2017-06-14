@@ -323,6 +323,7 @@ class lpp_addon_for_orddd {
                 foreach ( $results as $key => $value ) {    
                     $shipping_settings          = get_option( $value->option_name );
                     $orddd_pickup_locations_str = lpp_addon_for_orddd::orddd_pickup_location_settings( $shipping_settings, $checkout );
+                    $delivery_checkout_option = orddd_common::orddd_get_shipping_delivery_checkout_option( $shipping_settings );
                     $enable_delivery_date       = orddd_common::orddd_get_shipping_enable_delivery_date( $shipping_settings );
                     $date_field_mandatory       = orddd_common::orddd_get_shipping_date_field_mandatory( $shipping_settings );
                     $time_slots_enable          = orddd_common::orddd_is_shipping_timeslot_enable( $shipping_settings );
@@ -330,8 +331,12 @@ class lpp_addon_for_orddd {
                     $new_array                  = orddd_common::orddd_get_shipping_hidden_variables( $shipping_settings );
                     $var_time                   = orddd_common::orddd_get_shipping_time_settings_variable( $shipping_settings ); 
                     $disabled_days_str          = orddd_common::orddd_get_shipping_disabled_days_str( $shipping_settings );
+                    $orddd_min_between_days     = orddd_common::orddd_get_shipping_orddd_min_between_days( $shipping_settings );
+                    $orddd_max_between_days     = orddd_common::orddd_get_shipping_orddd_max_between_days( $shipping_settings );
+                    $orddd_minimum_delivery_time   = orddd_common::orddd_get_shipping_minimum_delivery_time( $shipping_settings );
                     if( isset( $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] ) && $shipping_settings[ 'delivery_settings_based_on' ][ 0 ] == 'orddd_pickup_locations' ) {
                         $orddd_pickup_locations[ $i ][ 'orddd_pickup_locations' ] = $orddd_pickup_locations_str;
+                        $orddd_pickup_locations[ $i ][ 'orddd_delivery_checkout_options' ] = $delivery_checkout_option;
                         $orddd_pickup_locations[ $i ][ 'enable_delivery_date' ] = $enable_delivery_date;
                         $orddd_pickup_locations[ $i ][ 'date_field_mandatory' ] = $date_field_mandatory;
                         $orddd_pickup_locations[ $i ][ 'time_slots' ] = $time_slots_enable;
@@ -339,6 +344,9 @@ class lpp_addon_for_orddd {
                         $orddd_pickup_locations[ $i ][ 'hidden_vars' ] = json_encode( $new_array );
                         $orddd_pickup_locations[ $i ][ 'time_settings' ] = $var_time;
                         $orddd_pickup_locations[ $i ][ 'disabled_days' ] = $disabled_days_str;
+                        $orddd_pickup_locations[ $i ][ 'orddd_min_between_days' ] = $orddd_min_between_days;
+                        $orddd_pickup_locations[ $i ][ 'orddd_max_between_days' ] = $orddd_max_between_days;
+                        $orddd_pickup_locations[ $i ][ 'orddd_minimum_delivery_time' ] = $orddd_minimum_delivery_time;
                     }
                     $i++;
                 }
